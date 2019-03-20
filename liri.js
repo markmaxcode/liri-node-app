@@ -1,11 +1,19 @@
 var config = require("dotenv").config();
 var axios = require("axios");
-console.log("hello");
-console.log(process.env);
-console.log(process.argv);
+var imdbApi = require('imdb-api');
+//console.log("hello");
+//console.log(process.env);
+//console.log(process.argv);
+var movieSelection = (process.argv)
 var commandOption = (process.argv[2]);
 var requestOption = (process.argv[3]);
-if (commandOption==="concert-this"){
+if (commandOption === "movie-this"){
+  //getMovieInfo(requestOption) 
+  if (requestOption  === "") {getMovieInfo("Mr. Nobody")}
+  else { getMovieInfo(requestOption)
+
+  }
+} else if (commandOption==="concert-this"){
     getConcertInfo(requestOption);
 } else {
     console.log("invalid");
@@ -26,3 +34,32 @@ axios.get("https://rest.bandsintown.com/artists/" + artist + "/events?app_id=cod
     console.log(error);
   });
 }
+
+
+/*function getMovieInfo(){ 
+axios.get("http://www.imdb.com/title/tt0485947/")
+  .then (function (response)) {
+    console.log(response);
+    
+    getMovieInfo();
+
+
+  }
+*/
+function getMovieInfo(requestOption){
+imdbApi.get({name: requestOption}, {apiKey: 'trilogy', timeout: 30000})
+.then(function (response){
+  console.log("title:" + response.title);
+  console.log("year:" + response.year);
+  console.log(response.ratings[0].Source + ":" + response.ratings[0].Value);
+  console.log(response.ratings[1].Source + ":" + response.ratings[1].Value);
+  console.log("country:" + response.country);
+  console.log("language:" + response.languages);
+  console.log("Plot:" + response.plot);
+  console.log("actors:" + response.actors);
+
+})
+.catch(console.log);
+}
+
+
