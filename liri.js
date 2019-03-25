@@ -2,6 +2,7 @@ var config = require("dotenv").config();
 var axios = require("axios");
 var imdbApi = require('imdb-api');
 var Spotify = require('node-spotify-api');
+var fs = require("fs");
 //console.log("hello");
 //console.log(process.env);
 //console.log(process.argv);
@@ -25,6 +26,14 @@ else if(commandOption === "spotify-this-song"){
   } else {
      getSpotifyTrack(requestOption)
   }
+} else if (commandOption === "do-what-it-says"){
+      console.log("do-what-it-says")
+      var filename = "./random.txt"
+      fs.readFile(filename, 'utf8', function(err, data) {
+        if (err) throw err;
+        console.log(data)
+        getSpotifyTrack(data)
+      });
 }
 else {
     console.log("invalid");
@@ -80,7 +89,6 @@ imdbApi.get({name: requestOption}, {apiKey: 'trilogy', timeout: 30000})
 
  
 function getSpotifyTrack(requestOption){
-
   var spotify = new Spotify({
   id: process.env.SPOTIFY_ID,
   secret: process.env.SPOTIFY_SECRET
