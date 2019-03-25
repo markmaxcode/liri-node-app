@@ -1,6 +1,7 @@
 var config = require("dotenv").config();
 var axios = require("axios");
 var imdbApi = require('imdb-api');
+var Spotify = require('node-spotify-api');
 //console.log("hello");
 //console.log(process.env);
 //console.log(process.argv);
@@ -9,13 +10,23 @@ var commandOption = (process.argv[2]);
 var requestOption = (process.argv[3]);
 if (commandOption === "movie-this"){
   //getMovieInfo(requestOption) 
-  if (requestOption  === "") {getMovieInfo("Mr. Nobody")}
-  else { getMovieInfo(requestOption)
-
+  //console.log('everywhere',type(requestOption))
+  if (typeof(requestOption) === 'undefined' || requestOption  === "") {
+    getMovieInfo("Mr. Nobody")
+  } else { 
+    getMovieInfo(requestOption)
   }
 } else if (commandOption==="concert-this"){
     getConcertInfo(requestOption);
-} else {
+} 
+else if(commandOption === "spotify-this-song"){
+  if (typeof(requestOption) === 'undefined' || requestOption === "") { 
+      getSpotifyTrack("I saw the Sign")
+  } else {
+     getSpotifyTrack(requestOption)
+  }
+}
+else {
     console.log("invalid");
 }
 function getConcertInfo(artist){ 
@@ -47,6 +58,7 @@ axios.get("http://www.imdb.com/title/tt0485947/")
   }
 */
 function getMovieInfo(requestOption){
+  console.log(requestOption)
 imdbApi.get({name: requestOption}, {apiKey: 'trilogy', timeout: 30000})
 .then(function (response){
   console.log("title:" + response.title);
@@ -59,7 +71,32 @@ imdbApi.get({name: requestOption}, {apiKey: 'trilogy', timeout: 30000})
   console.log("actors:" + response.actors);
 
 })
-.catch(console.log);
+.catch(function (error) {
+  console.log(error);
+  console.log("Test")
+});
 }
 
 
+ 
+function getSpotifyTrack(requestOption){
+
+  var spotify = new Spotify({
+  id: process.env.SPOTIFY_ID,
+  secret: process.env.SPOTIFY_SECRET
+});
+ 
+spotify.search({ type: 'track', query: requestOption })
+  .then(function(response) {
+var firstTrack = response.tracks.items[0];
+    //console.log(response);
+    //console.log(response.tracks.items[0]);
+    console.log(firstTrack.name);
+    console.log(firstTrack.artists[0].name);
+    console.log(firstTrack.external_urls);
+    console.log(firstTrack.album.name);
+  })
+  .catch(function(err) {
+    console.log(err);
+  });
+}
